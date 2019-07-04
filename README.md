@@ -1,1 +1,1 @@
-# dpbd-benchmark
+# TPC-H-benchmark
