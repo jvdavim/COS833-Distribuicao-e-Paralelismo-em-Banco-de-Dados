@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def tpcPower(SF, Q, R):
     """
     SF: Scale Factor
@@ -8,8 +9,9 @@ def tpcPower(SF, Q, R):
     Computa o inverso da media geometrica dos intervalos de tempo
     """
     n = 3600 * SF
-    d = np.power(np.prod(Q) * np.prod(R) , ( 1/( len(Q) + len(R) ) ) )
+    d = np.power(np.prod(Q) * np.prod(R), (1/(len(Q) + len(R))))
     return (n/d)
+
 
 def tpcThroughput(T, S, SF, n_queries):
     """
@@ -27,11 +29,15 @@ def tpcThroughput(T, S, SF, n_queries):
 
     4.13 / 5.3.6
 
+
 def queryPerHour(power, throughput)
-    return np.round( np.sqrt(power * throughput) , 1)
+
+
+return np.round(np.sqrt(power * throughput), 1)
+
 
 def price(query_per_hor, hour_price):
     return hour_price/query_per_hor
 
-## Métrica de ¨Data disponível¨ também precisa ser reportada
-## Resultados devem ser apresentados conforme mostra a secçã8 do documento
+# Métrica de ¨Data disponível¨ também precisa ser reportada
+# Resultados devem ser apresentados conforme mostra a secçã8 do documento

@@ -1,22 +1,27 @@
 import psycopg2
+import os
 
 
 class TPCH:
     def __init__(self):
         self.conn = psycopg2.connect("host=localhost dbname=tpch user=postgres")
         self.cur = self.conn.cursor()
+        self.folder = os.path.dirname(os.path.abspath(__file__))
+        self.query3 = open(os.path.join(self.folder, '3.sql'), "r").read()
+        self.query6 = open(os.path.join(self.folder, '6.sql'), "r").read()
+        self.query10 = open(os.path.join(self.folder, '10.sql'), "r").read()
 
     def create_tables(self):
         try:
             self.cur.execute('BEGIN')
-            self.cur.execute('DROP TABLE IF EXISTS region CASCADE')
-            self.cur.execute('DROP TABLE IF EXISTS part CASCADE')
-            self.cur.execute('DROP TABLE IF EXISTS nation CASCADE')
-            self.cur.execute('DROP TABLE IF EXISTS supplier CASCADE')
-            self.cur.execute('DROP TABLE IF EXISTS customer CASCADE')
-            self.cur.execute('DROP TABLE IF EXISTS partsupp CASCADE')
-            self.cur.execute('DROP TABLE IF EXISTS orders CASCADE')
-            self.cur.execute('DROP TABLE IF EXISTS lineitem CASCADE')
+            self.cur.execute('DROP TABLE IF EXISTS lineitem')
+            self.cur.execute('DROP TABLE IF EXISTS orders')
+            self.cur.execute('DROP TABLE IF EXISTS partsupp')
+            self.cur.execute('DROP TABLE IF EXISTS customer')
+            self.cur.execute('DROP TABLE IF EXISTS supplier')
+            self.cur.execute('DROP TABLE IF EXISTS nation')
+            self.cur.execute('DROP TABLE IF EXISTS part')
+            self.cur.execute('DROP TABLE IF EXISTS region')
             self.cur.execute('CREATE TABLE part('
                              'P_PARTKEY		SERIAL PRIMARY KEY,'
                              'P_NAME			VARCHAR(55),'
@@ -28,8 +33,6 @@ class TPCH:
                              'P_RETAILPRICE	DECIMAL,'
                              'P_COMMENT		VARCHAR(23)'
                              ')')
-            self.cur.execute('SELECT * FROM part')
-            one = self.cur.fetchone()
             self.cur.execute('CREATE TABLE REGION ('
                              'R_REGIONKEY	SERIAL PRIMARY KEY,'
                              'R_NAME		CHAR(25),'
@@ -98,15 +101,6 @@ class TPCH:
                              'L_COMMENT		VARCHAR(44),'
                              'PRIMARY KEY (L_ORDERKEY, L_LINENUMBER)  '
                              ')')
-            self.cur.execute('ALTER TABLE supplier ADD FOREIGN KEY (S_NATIONKEY) REFERENCES nation(N_NATIONKEY)')
-            self.cur.execute('ALTER TABLE partsupp ADD FOREIGN KEY (PS_PARTKEY) REFERENCES part(P_PARTKEY)')
-            self.cur.execute('ALTER TABLE partsupp ADD FOREIGN KEY (PS_SUPPKEY) REFERENCES supplier(S_SUPPKEY)')
-            self.cur.execute('ALTER TABLE customer ADD FOREIGN KEY (C_NATIONKEY) REFERENCES nation(N_NATIONKEY)')
-            self.cur.execute('ALTER TABLE orders ADD FOREIGN KEY (O_CUSTKEY) REFERENCES customer(C_CUSTKEY)')
-            self.cur.execute('ALTER TABLE lineitem ADD FOREIGN KEY (L_ORDERKEY) REFERENCES orders(O_ORDERKEY)')
-            self.cur.execute(
-                'ALTER TABLE lineitem ADD FOREIGN KEY (L_PARTKEY,L_SUPPKEY) REFERENCES partsupp(PS_PARTKEY,PS_SUPPKEY)')
-            self.cur.execute('ALTER TABLE nation ADD FOREIGN KEY (N_REGIONKEY) REFERENCES REGION(R_REGIONKEY)')
             self.cur.execute('COMMIT')
         except Exception as e:
             print(f'Erro ao criar tabelas: {e}')
@@ -141,9 +135,10 @@ class TPCH:
         try:
             self.cur.execute('BEGIN')
             self.cur.execute(query)
+            result = self.cur.fetchall()
             self.cur.execute('COMMIT')
-            return self.cur.fetchall()
+            return result
         except Exception as e:
             print(f'Erro ao executar select: {e}')
             self.cur.execute('ABORT')
-            return []
+            return None
