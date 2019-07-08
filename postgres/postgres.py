@@ -1,5 +1,6 @@
 from threading import Thread
 import psycopg2
+import time
 
 
 class DatabaseLoader():
@@ -136,18 +137,23 @@ class DatabaseLoader():
 
 
 class DatabaseWorker(Thread):
-    def __init__(self, query):
+    def __init__(self, queries):
         Thread.__init__(self)
-        self.query = query
+        self.queries = queries
         self.result = None
 
     def run(self):
+        times = 0
         try:
             self.connection = psycopg2.connect("host=localhost dbname=tpch user=postgres")
             self.cursor = self.connection.cursor()
             self.cursor.execute('BEGIN')
-            self.cursor.execute(self.query)
-            print(self.cursor.fetchone())
+            for i in range(10):
+                start = time.time()
+                for query in self.queries:
+                    self.cursor.execute(query)
+                times += time.time()-start
+            print(f'Tempo médio: {times/10.0}')
             self.cursor.execute('COMMIT')
         except Exception as e:
             print(f'Erro ao executar thread: {e}')

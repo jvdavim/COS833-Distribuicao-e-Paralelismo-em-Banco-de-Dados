@@ -1,3 +1,6 @@
+--1. SEGMENT is randomly selected within the list of values defined for Segments in Clause 4.2.2.13;
+--2. DATE is a randomly selected day within [1995-03-01 .. 1995-03-31].
+
 select
         l_orderkey,
         sum(l_extendedprice * (1 - l_discount)) as revenue,

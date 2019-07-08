@@ -30,10 +30,8 @@ def tpcThroughput(T, S, SF, n_queries):
     4.13 / 5.3.6
 
 
-def queryPerHour(power, throughput)
-
-
-return np.round(np.sqrt(power * throughput), 1)
+def queryPerHour(power, throughput):
+    return np.round(np.sqrt(power * throughput), 1)
 
 
 def price(query_per_hor, hour_price):
